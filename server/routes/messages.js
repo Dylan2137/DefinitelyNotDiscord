@@ -42,4 +42,17 @@ router.post('/createroom', async(req, res) => {
         console.log(err)
     }
 })
+
+router.post('/getMessages', async(req, res) => {
+    let {roomId} = req.body;
+    try{
+        const [messages] = await db.execute("SELECT message_content FROM messages WHERE room_id = ?", [roomId]);
+        res.status(200).json(messages);
+    }
+    catch(err){
+        res.status(500).json({message: "Problem engine kaput"});
+        console.log(err)
+
+    }
+})
 export default router;

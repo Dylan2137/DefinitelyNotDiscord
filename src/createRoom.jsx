@@ -7,7 +7,7 @@ export default function CreateRoom({userId, setRoomId, setUserLogin}) {
     const handleCreateRoom = async (e) => {
         e.preventDefault();
         try{
-            const response = await fetch("http://localhost:3000/messages/createroom", {
+            const response = await fetch("http://localhost:3000/messages/create-room", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

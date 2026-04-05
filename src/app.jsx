@@ -24,7 +24,7 @@ export default function MyApp(){
             socket.emit('joinRoom', roomId);
             async function getMessages() {
                 try{
-                    const response = await fetch("http://localhost:3000/messages/getMessages", {
+                    const response = await fetch("http://localhost:3000/messages/get-messages", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -35,6 +35,7 @@ export default function MyApp(){
                     const data = await response.json();
                     if (response.ok){
                         setMessages(data);
+                        console.log("Got messages");
                     }
                     else{
                         console.log(response);
@@ -89,7 +90,7 @@ export default function MyApp(){
                     <CreateRoom userId={userId} setRoomId={setRoomId} setUserLogin={setRoomLogin}/>
 
                 </div>
-                <div id={"content"} className={"flex-1 flex flex-col overflow-y-auto p-4 ml-35 justify-end mb-20"}>
+                <div id={"content"} className={"flex-1 flex flex-col overflow-y-auto p-4 ml-35 justify-start mb-20"}>
                     <Messages messages={messages}/>
                 </div>
                 <div id={"input"} className={"fixed bottom-0 w-full flex justify-center"}>

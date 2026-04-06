@@ -1,5 +1,6 @@
 import { useState } from "react";
-export default function RegisterForm ({onRegisterSuccess}){
+import { Link } from "react-router-dom";
+export default function RegisterForm(){
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [login, setLogin] = useState("");
@@ -38,7 +39,7 @@ export default function RegisterForm ({onRegisterSuccess}){
             <label htmlFor={"login"} className={"text-center"}>Login</label><input type={"text"} value={login} id={"login"} className={"bg-gray-900 border-2 border-gray-500 rounded-md w-50 h-7 focus:outline-none p-2 self-center"} onChange={(e) => setLogin(e.target.value)}/>
             <label htmlFor={"password"} className={"text-center"}>Password</label><input className={"bg-gray-900 border-2 border-gray-500 rounded-md w-50 h-7 focus:outline-none p-2 self-center"} type={"password"} value={password} id={"password"} onChange={(e) => setPassword(e.target.value)}/>
             <button type={"submit"} className={"bg-gray-900 rounded-xl h-10 w-20 hover:bg-gray-800 duration-250 hover:w-22 hover:h-11 self-center m-3"}>Register</button>
-            <p className={"self-center"}>Already have an account?<b className={"text-white cursor-pointer"} onClick={onRegisterSuccess}>Log In</b></p>
+            <p className={"self-center"}>Already have an account?<Link to={"/login"} className={"text-white cursor-pointer font-bold"}>Log In</Link></p>
             <p className={"self-center text-red-100"}>{error}</p>
         </form>
     )

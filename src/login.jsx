@@ -1,5 +1,6 @@
 import { useState } from "react";
-export default function LoginForm ({onLoginSuccess, login, setLogin, onRegister, setUserId}){
+import { Link } from "react-router-dom";
+export default function LoginForm ({onLoginSuccess, login, setLogin, setUserId}){
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const loginCheck = async (e) => {
@@ -37,7 +38,7 @@ export default function LoginForm ({onLoginSuccess, login, setLogin, onRegister,
             <label htmlFor={"password"} className={"text-center"}>Password</label><input className={"bg-gray-900 border-2 border-gray-500 rounded-md w-50 h-7 focus:outline-none p-2 self-center"} type={"password"} value={password} id={"password"} onChange={(e) => setPassword(e.target.value)}/>
             <button type={"submit"} className={"bg-gray-900 rounded-xl h-10 w-20 hover:bg-gray-800 duration-250 hover:w-22 hover:h-11 self-center m-3"}>Log In</button>
             <p className={"self-center text-red-100"}>{error}</p>
-            <p className={"self-center"}>Don't have an account? <b className={"text-white cursor-pointer"} onClick={onRegister}>Register</b></p>
+            <p className={"self-center"}>Don't have an account? <Link to={"/register"} className={"text-white cursor-pointer font-bold"}>Register</Link></p>
         </form>
     )
 

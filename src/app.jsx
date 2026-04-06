@@ -1,9 +1,12 @@
-import {useEffect, useState} from "react";
+import {useEffect, useState, useRef} from "react";
 import LoginForm from "./login";
 import TypeField from "./typeField"
 import RegisterForm from "./register";
-import CreateRoom from "./createRoom";
 import Messages from "./messages";
+import FriendRequest from "./friendRequest.jsx";
+import FriendList from "./friendList";
+
+import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import { io } from "socket.io-client";
 const socket = io("http://localhost:3000");
 
@@ -17,7 +20,10 @@ export default function MyApp(){
     const [login, setLogin] = useState("");
     const [userId, setUserId] = useState(0);
     const [roomId, setRoomId] = useState(0);
-    const [roomLogin, setRoomLogin] = useState("");
+
+    const navigate = useNavigate();
+
+    const contentRef = useRef(null);
 
     useEffect(() => {
         if (roomId !== 0){
@@ -47,7 +53,6 @@ export default function MyApp(){
 
             }
             getMessages();
-
         }
     },[roomId]);
 
@@ -68,7 +73,6 @@ export default function MyApp(){
                 return;
             }
             if (!event.shiftKey) {
-                window.scrollTo(0, document.body.scrollHeight);
                 const messageData = {
                     roomId: roomId,
                     message: text.trim(),
@@ -77,32 +81,54 @@ export default function MyApp(){
 
                 socket.emit('sendMessage', messageData);
                 setText("");
+                setTimeout(() => {
+                    if (contentRef.current) {
+                        contentRef.current.scrollTop = contentRef.current.scrollHeight;
+                    }
+                }, 0);
             }
         }
 
     }
-    if (isLoggedIn){
-        return(
-            <div className={"h-screen flex flex-col"}>
+    return (
+        <Routes>
+            <Route path="/" element={
+                isLoggedIn ? (
+                    <FriendList />
+                ) : (
+                    <Navigate to="/login" />
+                )
+            } />
 
-                <div id={"header"} className={"bg-gray-900 fixed top-0 w-full"}>
-                    <h1 className={"text-5xl text-blue-300 flex justify-center"}>{userId} {login} : {roomLogin === "" ? "" : roomLogin}</h1>
-                    <CreateRoom userId={userId} setRoomId={setRoomId} setUserLogin={setRoomLogin}/>
+            <Route path="/chat" element={
+                <div className={"h-screen flex flex-col"}>
+                    <div id={"header"} className={"bg-gray-900 fixed top-0 w-full"}>
+                        <h1 className={" text-blue-700 font-bold text-2xl"}>{login}</h1>
+                        <FriendRequest senderId={userId}/>
+                    </div>
+                    <div id={"content"} ref={contentRef} className={"flex-1 flex flex-col overflow-y-auto p-4 pb-13 pt-20 justify-end-safe ml-35 mb-20"}>
+                        <Messages messages={messages}/>
+                    </div>
+                    <div id={"input"} className={"fixed bottom-0 w-full flex justify-center"}>
+                        <TypeField textValue={text} onTextChange={setText} keyDown={handleSendMessage}/>
+                    </div>
+                </div>
+            }/>
+            <Route path="/login" element={
+                <LoginForm
+                    onLoginSuccess={() => {
+                        setIsLoggedIn(true);
+                        navigate("/");
+                    }}
+                    login={login}
+                    setLogin={setLogin}
+                    setUserId={setUserId}
+                />
+            } />
 
-                </div>
-                <div id={"content"} className={"flex-1 flex flex-col overflow-y-auto p-4 ml-35 justify-start mb-20"}>
-                    <Messages messages={messages}/>
-                </div>
-                <div id={"input"} className={"fixed bottom-0 w-full flex justify-center"}>
-                    <TypeField textValue={text} onTextChange={setText} keyDown={handleSendMessage}/>
-                </div>
-
-            </div>)
-    }
-    else if (!isRegistered){
-        return(<RegisterForm onRegisterSuccess={() => {setIsRegistered(true)}}/>)
-    }
-    else{
-        return(<LoginForm onLoginSuccess={() => setIsLoggedIn(true)} login={login} setLogin={setLogin} onRegister={() => {setIsRegistered(false);}} setUserId={setUserId}/>)
-    }
+            <Route path="/register" element={
+                <RegisterForm />
+            } />
+        </Routes>
+    )
 }

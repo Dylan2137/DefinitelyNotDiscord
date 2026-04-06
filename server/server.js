@@ -48,8 +48,11 @@ app.use(express.json())
 
 import userRouter from './routes/users.js';
 import messagesRouter from './routes/messages.js';
+import friendsRouter from './routes/friends.js';
 
 app.use('/users', userRouter);
 app.use('/messages', messagesRouter);
+app.use('/friends', friendsRouter);
+
 
 httpServer.listen(3000);

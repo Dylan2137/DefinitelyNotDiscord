@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export default function FriendList({userId}) {
+export default function FriendList({userId, setRoomId}) {
     const [friends, setFriends] = useState([]);
     useEffect(() => {
         const getFriends = async () => {
@@ -23,5 +23,14 @@ export default function FriendList({userId}) {
             }
         }
         getFriends();
-    }, []);
+    }, [userId]);
+    return(
+        <>
+            <div className="flex flex-col">
+                {friends.map((friend, index) => (
+                    <div key={index} className="flex flex-col" onClick={() => {setRoomId(friend.room_id)}}>{friend.login}</div>
+                ))}
+            </div>
+        </>
+    );
 }

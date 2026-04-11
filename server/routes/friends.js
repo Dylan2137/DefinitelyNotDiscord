@@ -3,7 +3,7 @@ const router = express.Router();
 import db from '../db.js';
 
 router.post('/friend-request', async(req, res) => {
-    let {senderId, targetLogin} = req.body;
+    let {userId, targetLogin} = req.body;
     try{
         const [users] = await db.execute("SELECT user_id FROM users WHERE login = ?", [targetLogin]);
         if (users.length === 0){
@@ -12,14 +12,14 @@ router.post('/friend-request', async(req, res) => {
         }
         else{
             const targetId = users[0].user_id;
-            if (targetId === senderId){
+            if (targetId === userId){
                 res.status(401).send({message: "Can't send a friend request to yourself"});
             }
             else{
-                const [rooms] = await db.execute('SELECT * FROM rooms WHERE (user1_id = ? AND user2_id = ?)', [Math.min(senderId, targetId), Math.max(senderId, targetId)]);
-                const [requests] = await db.execute('SELECT * FROM friend_requests WHERE (sender_id = ? AND target_id = ?) OR (sender_id = ? AND target_id = ?)', [senderId, targetId, targetId, senderId]);
+                const [rooms] = await db.execute('SELECT * FROM rooms WHERE (user1_id = ? AND user2_id = ?)', [Math.min(userId, targetId), Math.max(userId, targetId)]);
+                const [requests] = await db.execute('SELECT * FROM friend_requests WHERE (sender_id = ? AND target_id = ?) OR (sender_id = ? AND target_id = ?)', [userId, targetId, targetId, userId]);
                 if (rooms.length === 0 && requests.length === 0){
-                    await db.execute('INSERT INTO friend_requests (sender_id, target_id) VALUES(?, ?)',  [senderId, targetId]);
+                    await db.execute('INSERT INTO friend_requests (sender_id, target_id) VALUES(?, ?)',  [userId, targetId]);
 
                     res.status(200).json({message: "Request sent successfully."})
                 }
@@ -51,6 +51,27 @@ router.post('/get-friends', async(req, res) => {
     catch(err){
         res.status(500).json({message: err});
         console.log(err)
+    }
+})
+router.post('/get-requests', async(req, res) => {
+    let {userId} = req.body;
+    try{
+        const [requests] = await db.execute("SELECT login, req_id, sender_id FROM friend_requests JOIN users ON users.user_id = friend_requests.sender_id WHERE friend_requests.target_id = ?", [userId]);
+        res.status(200).json(requests);
+    }
+    catch(err){
+        res.status(500).json({message: err});
+    }
+
+})
+router.post('/accept-request', async(req, res) => {
+    let {senderId, userId, requestId} = req.body;
+    try{
+        await db.execute("INSERT INTO rooms (user1_id, user2_id) VALUES(?, ?)", [Math.min(senderId, userId), Math.max(senderId, userId)]);
+        await db.execute("DELETE FROM friend_requests WHERE req_id = ?", [requestId]);
+    }
+    catch(err){
+        res.status(500).json({message: err});
     }
 })
 export default router;

@@ -5,7 +5,7 @@ import RegisterForm from "./register";
 import Messages from "./messages";
 import FriendRequest from "./friendRequest.jsx";
 import FriendList from "./friendList";
-
+import { Link } from "react-router-dom";
 import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import { io } from "socket.io-client";
 const socket = io("http://localhost:3000");
@@ -14,7 +14,6 @@ const socket = io("http://localhost:3000");
 
 export default function MyApp(){
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [isRegistered, setIsRegistered] = useState(true);
     const [text, setText] = useState("");
     const [messages, setMessages] = useState([]);
     const [login, setLogin] = useState("");
@@ -94,7 +93,17 @@ export default function MyApp(){
         <Routes>
             <Route path="/" element={
                 isLoggedIn ? (
-                    <FriendList />
+                        <div className={"flex "}>
+                            <div className={"w-[19.8%]  h-screen bg-gray-600"}>
+                                <FriendList userId={userId} setRoomId={setRoomId}/>
+                            </div>
+                            <div className={"w-[80.2%] h-screen flex flex-col bg-gray-900"}>
+                                <div id={"header"} className={"bg-gray-950 w-full h-[7vh]"}>
+                                    <Link className={"font-bold text-xl self-center align-middle justify-center h-full w-[25%] flex pt-5 hover:bg-gray-800 duration-100"} to={"/friend-requests"}>Friend requests</Link>
+                                </div>
+                            </div>
+                        </div>
+
                 ) : (
                     <Navigate to="/login" />
                 )
@@ -102,10 +111,7 @@ export default function MyApp(){
 
             <Route path="/chat" element={
                 <div className={"h-screen flex flex-col"}>
-                    <div id={"header"} className={"bg-gray-900 fixed top-0 w-full"}>
-                        <h1 className={" text-blue-700 font-bold text-2xl"}>{login}</h1>
-                        <FriendRequest senderId={userId}/>
-                    </div>
+                    <FriendRequest userId={userId}/>
                     <div id={"content"} ref={contentRef} className={"flex-1 flex flex-col overflow-y-auto p-4 pb-13 pt-20 justify-end-safe ml-35 mb-20"}>
                         <Messages messages={messages}/>
                     </div>
@@ -129,6 +135,9 @@ export default function MyApp(){
             <Route path="/register" element={
                 <RegisterForm />
             } />
+            <Route path="/friend-requests" element={
+                    <FriendRequest userId={userId}/>
+            }/>
         </Routes>
     )
 }

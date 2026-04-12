@@ -26,6 +26,7 @@ export default function MyApp(){
 
     useEffect(() => {
         if (roomId !== 0){
+            navigate('/chat');
             socket.emit('joinRoom', roomId);
             async function getMessages() {
                 try{
@@ -94,12 +95,10 @@ export default function MyApp(){
             <Route path="/" element={
                 isLoggedIn ? (
                         <div className={"flex "}>
-                            <div className={"w-[19.8%]  h-screen bg-gray-600"}>
-                                <FriendList userId={userId} setRoomId={setRoomId}/>
-                            </div>
-                            <div className={"w-[80.2%] h-screen flex flex-col bg-gray-900"}>
+                            <FriendList userId={userId} setRoomId={setRoomId} login={login}/>
+                            <div className={"w-full h-screen flex flex-col"}>
                                 <div id={"header"} className={"bg-gray-950 w-full h-[7vh]"}>
-                                    <Link className={"font-bold text-xl self-center align-middle justify-center h-full w-[25%] flex pt-5 hover:bg-gray-800 duration-100"} to={"/friend-requests"}>Friend requests</Link>
+                                    <Link className={"font-bold text-xl self-center align-middle justify-center h-full w-[25%] flex pt-5 hover:bg-gray-700 duration-100"} to={"/friend-requests"}>Friend requests</Link>
                                 </div>
                             </div>
                         </div>
@@ -110,15 +109,19 @@ export default function MyApp(){
             } />
 
             <Route path="/chat" element={
-                <div className={"h-screen flex flex-col"}>
-                    <FriendRequest userId={userId}/>
-                    <div id={"content"} ref={contentRef} className={"flex-1 flex flex-col overflow-y-auto p-4 pb-13 pt-20 justify-end-safe ml-35 mb-20"}>
-                        <Messages messages={messages}/>
-                    </div>
-                    <div id={"input"} className={"fixed bottom-0 w-full flex justify-center"}>
-                        <TypeField textValue={text} onTextChange={setText} keyDown={handleSendMessage}/>
+                <div className={"flex flex-row w-full"}>
+                    <FriendList userId={userId} setRoomId={setRoomId} login={login}/>
+                    <div className={"h-screen flex flex-col w-[85vw]"}>
+                        <div id={"header"} className={"bg-gray-950 w-full h-[7vh]"}></div>
+                        <div id={"content"} ref={contentRef} className={"flex-1 flex flex-col overflow-y-auto p-4 pb-13 pt-20 justify-end-safe ml-12 mb-20"}>
+                            <Messages messages={messages}/>
+                        </div>
+                        <div id={"input"} className={"fixed bottom-0 w-full flex justify-start pl-12"}>
+                            <TypeField textValue={text} onTextChange={setText} keyDown={handleSendMessage}/>
+                        </div>
                     </div>
                 </div>
+
             }/>
             <Route path="/login" element={
                 <LoginForm
@@ -136,7 +139,11 @@ export default function MyApp(){
                 <RegisterForm />
             } />
             <Route path="/friend-requests" element={
+                <div className={"flex flex-row w-full"}>
+                    <FriendList userId={userId} setRoomId={setRoomId} login={login}/>
                     <FriendRequest userId={userId}/>
+                </div>
+
             }/>
         </Routes>
     )

@@ -43,9 +43,10 @@ router.post('/friend-request', async(req, res) => {
 });
 
 router.post('/get-friends', async(req, res) => {
-    let {userId} = req.body;
+    let {userId, login} = req.body;
     try{
-        const [friends] = await db.execute("SELECT room_id, login FROM rooms JOIN users ON (users.user_id = rooms.user1_id) OR (users.user_id = rooms.user2_id) WHERE rooms.user1_id = ? OR rooms.user2_id = ?", [userId, userId]);
+
+        const [friends] = await db.execute("SELECT room_id, login FROM rooms JOIN users ON (users.user_id = rooms.user1_id) OR (users.user_id = rooms.user2_id) WHERE (rooms.user1_id = ? OR rooms.user2_id = ?) AND login != ?", [userId, userId, login]);
         res.status(200).json(friends);
     }
     catch(err){
@@ -69,6 +70,17 @@ router.post('/accept-request', async(req, res) => {
     try{
         await db.execute("INSERT INTO rooms (user1_id, user2_id) VALUES(?, ?)", [Math.min(senderId, userId), Math.max(senderId, userId)]);
         await db.execute("DELETE FROM friend_requests WHERE req_id = ?", [requestId]);
+        res.status(200).json({message: "Request accepted successfully."})
+    }
+    catch(err){
+        res.status(500).json({message: err});
+    }
+})
+router.post('/reject-request', async(req, res) => {
+    let {requestId} = req.body;
+    try{
+        await db.execute("DELETE FROM friend_requests WHERE req_id = ?", [requestId]);
+        res.status(200).json({message: "Request rejected."})
     }
     catch(err){
         res.status(500).json({message: err});

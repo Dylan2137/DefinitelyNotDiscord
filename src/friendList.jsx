@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-
-export default function FriendList({userId, setRoomId}) {
+import {Link} from "react-router-dom";
+export default function FriendList({userId, setRoomId, login}) {
     const [friends, setFriends] = useState([]);
     useEffect(() => {
         const getFriends = async () => {
@@ -10,7 +10,7 @@ export default function FriendList({userId, setRoomId}) {
                     headers:{
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({userId})
+                    body: JSON.stringify({userId, login})
                 });
                 const data = await response.json();
                 if (response.ok){
@@ -26,9 +26,13 @@ export default function FriendList({userId, setRoomId}) {
     }, [userId]);
     return(
         <>
-            <div className="flex flex-col">
+            <div className="flex flex-col h-screen w-[15vw] bg-gray-900">
+                <span className={"p-2 text-2xl text-blue-950 bg-gray-500 border-b border-gray-400"}><Link to={"/"} className={"font-bold"} onClick={() => {setRoomId(0)}}>{login}</Link></span>
                 {friends.map((friend, index) => (
-                    <div key={index} className="flex flex-col" onClick={() => {setRoomId(friend.room_id)}}>{friend.login}</div>
+                    <div className={"border-b border-gray-400"}>
+                        <div key={index} className="cursor-pointer p-3 bg-gray-800 mt-1 mb-1 hover:bg-gray-700 duration-200 rounded-2xl" onClick={() => {setRoomId(friend.room_id)}}>{friend.login}</div>
+                    </div>
+
                 ))}
             </div>
         </>

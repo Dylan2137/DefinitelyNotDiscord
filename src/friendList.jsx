@@ -1,29 +1,45 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {Link} from "react-router-dom";
-export default function FriendList({userId, setRoomId, login}) {
+
+export default function FriendList({userId, setRoomId, login, socket}) {
     const [friends, setFriends] = useState([]);
-    useEffect(() => {
-        const getFriends = async () => {
-            try {
-                const response = await fetch('http://localhost:3000/friends/get-friends', {
-                    method: 'POST',
-                    headers:{
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({userId, login})
-                });
-                const data = await response.json();
-                if (response.ok){
-                    setFriends(data);
-                }else{
-                    console.log(data.message);
-                }
-            }catch(err){
-                console.log(err);
+
+    const getFriends = useCallback(async () => {
+        try {
+            const response = await fetch('http://localhost:3000/friends/get-friends', {
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({userId, login})
+            });
+            const data = await response.json();
+            if (response.ok){
+                return(data);
+            }else{
+                console.log(data.message);
+                return null;
             }
+        }catch(err){
+            console.log(err);
+            return null;
         }
-        getFriends();
-    }, [userId]);
+    }, [userId, login]);
+    useEffect(() => {
+        getFriends().then(data => {
+            if (data) setFriends(data);
+        });
+    }, [getFriends]);
+
+    useEffect(() => {
+        socket.on('reloadFriends', () => {
+            console.log("Reload friends");
+            getFriends().then(data => {
+                if (data) setFriends(data);
+            });
+        });
+        return () => socket.off('reloadFriends');
+    }, [getFriends, socket]);
     return(
         <>
             <div className="flex flex-col h-screen w-[15vw] bg-gray-900">

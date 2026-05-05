@@ -54,7 +54,7 @@ export default function MyApp(){
             }
             getMessages();
         }
-    },[roomId]);
+    },[roomId, navigate]);
 
     useEffect(() => {
         socket.on('receiveMessage', (data) => {
@@ -62,7 +62,13 @@ export default function MyApp(){
         })
 
         return () => socket.off('receiveMessage');
-    });
+    }, []);
+    useEffect(() => {
+        if (userId !== 0){
+            socket.emit('identify', userId);
+        }
+
+    }, [userId]);
 
 
     const handleSendMessage = (event) => {
@@ -95,7 +101,7 @@ export default function MyApp(){
             <Route path="/" element={
                 isLoggedIn ? (
                         <div className={"flex "}>
-                            <FriendList userId={userId} setRoomId={setRoomId} login={login}/>
+                            <FriendList userId={userId} setRoomId={setRoomId} login={login} socket={socket} />
                             <div className={"w-full h-screen flex flex-col"}>
                                 <div id={"header"} className={"bg-gray-950 w-full h-[7vh]"}>
                                     <Link className={"font-bold text-xl self-center align-middle justify-center h-full w-[25%] flex pt-5 hover:bg-gray-700 duration-100"} to={"/friend-requests"}>Friend requests</Link>
@@ -110,7 +116,7 @@ export default function MyApp(){
 
             <Route path="/chat" element={
                 <div className={"flex flex-row w-full"}>
-                    <FriendList userId={userId} setRoomId={setRoomId} login={login}/>
+                    <FriendList userId={userId} setRoomId={setRoomId} login={login} socket={socket} />
                     <div className={"h-screen flex flex-col w-[85vw]"}>
                         <div id={"header"} className={"bg-gray-950 w-full h-[7vh]"}></div>
                         <div id={"content"} ref={contentRef} className={"flex-1 flex flex-col overflow-y-auto p-4 pb-13 pt-20 justify-end-safe ml-12 mb-20"}>
@@ -140,8 +146,8 @@ export default function MyApp(){
             } />
             <Route path="/friend-requests" element={
                 <div className={"flex flex-row w-full"}>
-                    <FriendList userId={userId} setRoomId={setRoomId} login={login}/>
-                    <FriendRequest userId={userId}/>
+                    <FriendList userId={userId} setRoomId={setRoomId} login={login} socket={socket}/>
+                    <FriendRequest userId={userId} socket={socket}/>
                 </div>
 
             }/>

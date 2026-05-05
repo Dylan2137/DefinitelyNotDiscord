@@ -1,7 +1,6 @@
-import {useEffect, useState, useCallback} from "react";
+import {useEffect, useState} from "react";
 
-
-export default function FriendRequest({userId}) {
+export default function FriendRequest({userId, socket}) {
     const [targetLogin, setTargetLogin] = useState("");
     const [message,setMessage] = useState("");
     const [requests, setRequests] = useState([]);
@@ -18,6 +17,7 @@ export default function FriendRequest({userId}) {
             });
             const data = await response.json();
             setMessage(data.message);
+            socket.emit('reloadRequests', targetLogin);
         }
         catch(err){
             console.log(err);
@@ -37,7 +37,9 @@ export default function FriendRequest({userId}) {
             });
             const data = await response.json();
             setMessage(data.message);
+            socket.emit('reloadFriends', {userId, senderId});
             getRequests();
+
         }
         catch(err){
             console.log(err);
@@ -84,7 +86,14 @@ export default function FriendRequest({userId}) {
     }
     useEffect(() => {
         getRequests();
-    }, [userId])
+    }, [userId, getRequests]);
+
+    useEffect(() => {
+        socket.on('reloadRequests', () => {
+            console.log("Reloading requests")
+            getRequests();
+        });
+    }, [getRequests, socket]);
     return (
         <div className={"flex flex-col h-screen w-full"}>
             <div id={"header"} className={"bg-gray-900 top-0 w-full h-25"}>

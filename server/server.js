@@ -20,10 +20,28 @@ const io = new Server(httpServer, {
 
 io.on('connection', (socket) => {
     console.log('a user connected:', socket.id);
+
+    socket.on('identify', (userId) => {
+        const personalRoom = `user_${userId}`;
+        socket.join(personalRoom);
+    });
+
     socket.on('joinRoom', (roomId) => {
         socket.join(roomId);
         console.log(`User ${socket.id} joined ${roomId}`);
     });
+
+    socket.on('reloadFriends', ({userId, senderId}) => {
+        io.to(`user_${userId}`).emit('reloadFriends');
+        io.to(`user_${senderId}`).emit('reloadFriends');
+        console.log("reloading friends")
+    });
+
+    socket.on('reloadRequests', async (targetLogin) => {
+        const targetId = await db.execute("SELECT user_id FROM users WHERE login = ?", [targetLogin]);
+        io.to(`user_${targetId[0][0].user_id}`).emit('reloadRequests');
+        console.log("sending reloading requests")
+    })
 
     socket.on('sendMessage', async (data) => {
         const {roomId, message, senderLogin} = data;
@@ -34,9 +52,12 @@ io.on('connection', (socket) => {
             sender: senderLogin
         });
     });
+
     socket.on('disconnect', () => {
         console.log('a user disconnected');
     })
+
+
 })
 
 

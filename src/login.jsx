@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-export default function LoginForm ({onLoginSuccess, login, setLogin, setUserId}){
+export default function LoginForm ({onLoginSuccess, login, setLogin, setUserId, setPfp}){
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const loginCheck = async (e) => {
@@ -20,6 +20,7 @@ export default function LoginForm ({onLoginSuccess, login, setLogin, setUserId})
                 if (response.ok){
                     setError(data.message);
                     setUserId(data.userId);
+                    setPfp(data.pfp)
                     onLoginSuccess();
                 }
                 else {

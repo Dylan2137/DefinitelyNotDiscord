@@ -19,7 +19,7 @@ export default function MyApp(){
     const [login, setLogin] = useState("");
     const [userId, setUserId] = useState(0);
     const [roomId, setRoomId] = useState(0);
-
+    const [pfp, setPfp] = useState("");
     const navigate = useNavigate();
 
     const contentRef = useRef(null);
@@ -101,7 +101,7 @@ export default function MyApp(){
             <Route path="/" element={
                 isLoggedIn ? (
                         <div className={"flex "}>
-                            <FriendList userId={userId} setRoomId={setRoomId} login={login} socket={socket} />
+                            <FriendList userId={userId} setRoomId={setRoomId} login={login} socket={socket} pfp={pfp}/>
                             <div className={"w-full h-screen flex flex-col"}>
                                 <div id={"header"} className={"bg-gray-950 w-full h-[7vh]"}>
                                     <Link className={"font-bold text-xl self-center align-middle justify-center h-full w-[25%] flex pt-5 hover:bg-gray-700 duration-100"} to={"/friend-requests"}>Friend requests</Link>
@@ -116,7 +116,7 @@ export default function MyApp(){
 
             <Route path="/chat" element={
                 <div className={"flex flex-row w-full"}>
-                    <FriendList userId={userId} setRoomId={setRoomId} login={login} socket={socket} />
+                    <FriendList userId={userId} setRoomId={setRoomId} login={login} socket={socket} pfp={pfp}/>
                     <div className={"h-screen flex flex-col w-[85vw]"}>
                         <div id={"header"} className={"bg-gray-950 w-full h-[7vh]"}></div>
                         <div id={"content"} ref={contentRef} className={"flex-1 flex flex-col overflow-y-auto p-4 pb-13 pt-20 justify-end-safe ml-12 mb-20"}>
@@ -138,6 +138,7 @@ export default function MyApp(){
                     login={login}
                     setLogin={setLogin}
                     setUserId={setUserId}
+                    setPfp={setPfp}
                 />
             } />
 
@@ -146,7 +147,7 @@ export default function MyApp(){
             } />
             <Route path="/friend-requests" element={
                 <div className={"flex flex-row w-full"}>
-                    <FriendList userId={userId} setRoomId={setRoomId} login={login} socket={socket}/>
+                    <FriendList userId={userId} setRoomId={setRoomId} login={login} socket={socket} pfp={pfp}/>
                     <FriendRequest userId={userId} socket={socket}/>
                 </div>
 

@@ -2,7 +2,38 @@ import express from 'express';
 const router = express.Router();
 import db from '../db.js';
 import bcrypt from 'bcrypt';
+import multer from 'multer';
+import fs from 'fs';
 
+const uploadDir = 'uploads/';
+if (!fs.existsSync(uploadDir)){
+    fs.mkdirSync(uploadDir);
+}
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        const uniqueName = Date.now() + file.originalname;
+        cb(null, uniqueName);
+    }
+});
+
+const upload = multer({ storage: storage });
+
+router.use('/uploads', express.static('uploads'));
+
+router.post('/upload-photo', upload.single('photo'), async (req, res) => {
+    const userId = req.body.userId;
+    const photoPath = `/uploads/${req.file.filename}`;
+
+    try {
+        await db.execute("UPDATE users SET profile_picture = ? WHERE user_id = ?", [photoPath, userId]);
+        res.json({ message: "Photo uploaded successfully", path: photoPath });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 router.post('/register', async(req, res) => {
     let {login, password} = req.body;
     const saltRounds = 12
@@ -52,7 +83,7 @@ router.post('/login', async (req, res) => {
             bcrypt.compare(password, rows[0].password)
                 .then(result => {
                     if (result) {
-                        res.status(201).json({message: 'Login successful', userId: rows[0].user_id})
+                        res.status(201).json({message: 'Login successful', userId: rows[0].user_id, pfp: rows[0].profile_picture})
                     }else{
                         res.status(401).json({message: 'Password incorrect'})
                     }

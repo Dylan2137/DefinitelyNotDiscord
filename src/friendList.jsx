@@ -33,7 +33,7 @@ export default function FriendList({userId, setRoomId, login, socket, pfp}) {
         formData.append('photo', file);
         formData.append('userId', userId);
         try {
-            const response = await fetch('http://localhost:3000/users/upload-photo', {
+            const response = await fetch('http://localhost:3000/users/upload-pfp', {
                 method:'POST',
                 body: formData,
             });
@@ -67,7 +67,7 @@ export default function FriendList({userId, setRoomId, login, socket, pfp}) {
     return(
         <>
             <div className="flex flex-col h-screen w-[15vw] bg-gray-900">
-                <span className={"p-2 text-2xl text-blue-950 bg-gray-500 border-b border-gray-400 flex flex-col"}><Link to={"/"} className={"font-bold"} onClick={() => {setRoomId(0)}}><img src={`http://localhost:3000/users${pfp}`} alt={login} className={"w-10 h-10"}/></Link>
+                <span className={"p-2 text-2xl text-blue-950 bg-gray-500 border-b border-gray-400 flex flex-col"}><Link to={"/"} className={"font-bold"} onClick={() => {setRoomId(0)}}><img src={`http://localhost:3000${pfp}`} alt={login} className={"w-10 h-10"}/>{login}</Link>
                     <input
                         type={"file"}
                         id={"pfp"}

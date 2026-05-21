@@ -82,7 +82,8 @@ export default function MyApp(){
                 const messageData = {
                     roomId: roomId,
                     message: text.trim(),
-                    senderLogin: login
+                    senderLogin: login,
+                    isPhoto: false
                 }
 
                 socket.emit('sendMessage', messageData);
@@ -94,7 +95,6 @@ export default function MyApp(){
                 }, 0);
             }
         }
-
     }
     return (
         <Routes>
@@ -120,10 +120,10 @@ export default function MyApp(){
                     <div className={"h-screen flex flex-col w-[85vw]"}>
                         <div id={"header"} className={"bg-gray-950 w-full h-[7vh]"}></div>
                         <div id={"content"} ref={contentRef} className={"flex-1 flex flex-col overflow-y-auto p-4 pb-13 pt-20 justify-end-safe ml-12 mb-20"}>
-                            <Messages messages={messages}/>
+                            <Messages messages={messages} setMessages={setMessages}/>
                         </div>
                         <div id={"input"} className={"fixed bottom-0 w-full flex justify-start pl-12"}>
-                            <TypeField textValue={text} onTextChange={setText} keyDown={handleSendMessage}/>
+                            <TypeField textValue={text} onTextChange={setText} keyDown={handleSendMessage} userId={userId} roomId={roomId} socket={socket} login={login}/>
                         </div>
                     </div>
                 </div>

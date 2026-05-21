@@ -2,28 +2,11 @@ import express from 'express';
 const router = express.Router();
 import db from '../db.js';
 import bcrypt from 'bcrypt';
-import multer from 'multer';
-import fs from 'fs';
+import upload from '../upload.js';
 
-const uploadDir = 'uploads/';
-if (!fs.existsSync(uploadDir)){
-    fs.mkdirSync(uploadDir);
-}
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        const uniqueName = Date.now() + file.originalname;
-        cb(null, uniqueName);
-    }
-});
 
-const upload = multer({ storage: storage });
 
-router.use('/uploads', express.static('uploads'));
-
-router.post('/upload-photo', upload.single('photo'), async (req, res) => {
+router.post('/upload-pfp', upload.single('photo'), async (req, res) => {
     const userId = req.body.userId;
     const photoPath = `/uploads/${req.file.filename}`;
 

@@ -46,12 +46,13 @@ io.on('connection', (socket) => {
     })
 
     socket.on('sendMessage', async (data) => {
-        const {roomId, message, senderLogin} = data;
+        const {roomId, message, senderLogin, isPhoto} = data;
         const userId = await db.execute("SELECT user_id FROM users WHERE login = ?", [senderLogin]);
-        await db.execute("INSERT INTO messages (room_id, user_id, message_content, isPhoto) VALUES (?, ?, ?, false)", [roomId, userId[0][0].user_id, message]);
+        await db.execute("INSERT INTO messages (room_id, user_id, message_content, isPhoto) VALUES (?, ?, ?, ?)", [roomId, userId[0][0].user_id, message, isPhoto]);
         io.to(roomId).emit('receiveMessage', {
             text: message,
-            sender: senderLogin
+            sender: senderLogin,
+            isPhoto: isPhoto
         });
     });
 
@@ -76,6 +77,7 @@ import friendsRouter from './routes/friends.js';
 app.use('/users', userRouter);
 app.use('/messages', messagesRouter);
 app.use('/friends', friendsRouter);
+app.use('/uploads', express.static('uploads'));
 
 
 httpServer.listen(3000);

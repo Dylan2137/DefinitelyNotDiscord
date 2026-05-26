@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import {Link} from "react-router-dom";
 
-export default function FriendList({userId, setRoomId, login, socket, pfp}) {
+export default function FriendList({userId, setRoomId, login, socket, pfp, setPfp}) {
     const [friends, setFriends] = useState([]);
     const [file, setFile] = useState(null);
 
@@ -40,7 +40,7 @@ export default function FriendList({userId, setRoomId, login, socket, pfp}) {
             const data = await response.json();
             if (response.ok){
                 console.log("Uploaded file");
-
+                setPfp(data.path);
             }else{
                 console.log(data.error);
             }

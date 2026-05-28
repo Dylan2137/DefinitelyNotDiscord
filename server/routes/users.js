@@ -16,6 +16,7 @@ router.post('/upload-pfp', upload.single('photo'), async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
+
 });
 router.post('/register', async(req, res) => {
     let {login, password} = req.body;
@@ -24,12 +25,12 @@ router.post('/register', async(req, res) => {
     if (login.length >= 3 && password.length >= 8 && login.length <= 16 && password.length <= 24){
         if (loginRegex.test(login)){
             try{
-                const query = 'INSERT INTO users (login, password) VALUES(?, ?)'
+                const query = 'INSERT INTO users (login, password, profile_picture) VALUES(?, ?, "/uploads/pfp.png")'
 
-                bcrypt.hash(password, saltRounds, async (err, hash) => {
-                    if (err) throw err;
-                    await db.query(query, [login, hash]);
-                })
+                const hash = await bcrypt.hash(password, saltRounds);
+                await db.execute(query, [login, hash])
+                const [userId] = await db.execute("SELECT user_id FROM users WHERE login = ?", [login])
+                await db.execute('INSERT INTO gifs (user_id, gifs) VALUES (?, "")', [userId[0].user_id])
                 res.status(201).json({message: 'User successfully registered'})
             }
             catch(err){
@@ -57,7 +58,7 @@ router.post('/login', async (req, res) => {
 
     try{
         const query = 'SELECT * FROM users WHERE login=?';
-        const [rows] = await db.query(query, [login]);
+        const [rows] = await db.execute(query, [login]);
         if (rows.length === 0){
             res.status(401).json({message: 'Login incorrect'})
         }

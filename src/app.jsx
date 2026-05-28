@@ -20,6 +20,7 @@ export default function MyApp(){
     const [userId, setUserId] = useState(0);
     const [roomId, setRoomId] = useState(0);
     const [pfp, setPfp] = useState("");
+    const [gifs, setGifs] = useState([]);
     const navigate = useNavigate();
 
     const contentRef = useRef(null);
@@ -55,7 +56,6 @@ export default function MyApp(){
             getMessages();
         }
     },[roomId, navigate]);
-
     useEffect(() => {
         socket.on('receiveMessage', (data) => {
             setMessages((prevMessages) => [...prevMessages, data]);
@@ -64,8 +64,32 @@ export default function MyApp(){
         return () => socket.off('receiveMessage');
     }, []);
     useEffect(() => {
+        async function getGifs () {
+            try {
+                const response = await fetch ("http://localhost:3000/gifs/get-gifs", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({userId})
+                })
+                if (response.ok){
+                    const data = await response.json();
+                    setGifs(data.split(";").filter(path => path !== ""));
+
+                }
+                else{
+                    console.log(response);
+                }
+            }
+            catch(err){
+                console.log(err);
+            }
+        }
         if (userId !== 0){
             socket.emit('identify', userId);
+            getGifs();
+
         }
 
     }, [userId]);
@@ -120,7 +144,7 @@ export default function MyApp(){
                     <div className={"h-screen flex flex-col w-[85vw]"}>
                         <div id={"header"} className={"bg-gray-950 w-full h-[7vh]"}></div>
                         <div id={"content"} ref={contentRef} className={"flex-1 flex flex-col overflow-y-auto p-4 pb-13 pt-20 justify-end-safe ml-12 mb-20"}>
-                            <Messages messages={messages} setMessages={setMessages}/>
+                            <Messages messages={messages} setMessages={setMessages} userId={userId} gifs={gifs} setGifs={setGifs}/>
                         </div>
                         <div id={"input"} className={"fixed bottom-0 w-full flex justify-start pl-12"}>
                             <TypeField textValue={text} onTextChange={setText} keyDown={handleSendMessage} userId={userId} roomId={roomId} socket={socket} login={login}/>

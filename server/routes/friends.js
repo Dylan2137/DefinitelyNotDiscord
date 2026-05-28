@@ -68,9 +68,10 @@ router.post('/get-requests', async(req, res) => {
 router.post('/accept-request', async(req, res) => {
     let {senderId, userId, requestId} = req.body;
     try{
-        await db.execute("INSERT INTO rooms (user1_id, user2_id) VALUES(?, ?)", [Math.min(senderId, userId), Math.max(senderId, userId)]);
         await db.execute("DELETE FROM friend_requests WHERE req_id = ?", [requestId]);
+        await db.execute("INSERT INTO rooms (user1_id, user2_id) VALUES(?, ?)", [Math.min(senderId, userId), Math.max(senderId, userId)]);
         res.status(200).json({message: "Request accepted successfully."})
+
     }
     catch(err){
         res.status(500).json({message: err});

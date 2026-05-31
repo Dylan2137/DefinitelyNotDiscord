@@ -1,4 +1,9 @@
-export default function TypeField({ textValue, onTextChange, keyDown, userId, roomId, socket, login}){
+import GifDisplay from "./gifDisplay.jsx";
+import {useState} from "react";
+
+
+export default function TypeField({ textValue, onTextChange, keyDown, userId, roomId, socket, login, gifs}){
+    const [showGifs, setShowGifs] = useState(false);
     const sendPhoto = async (file) => {
         if (!file) return alert("Select a file");
 
@@ -30,17 +35,21 @@ export default function TypeField({ textValue, onTextChange, keyDown, userId, ro
 
     return(
         <div className={"w-full flex m-0"}>
-
-            <textarea onKeyDown={keyDown} className={"w-[80%]  text-gray-300 min-h-20 bg-gray-600 rounded-2xl border-2 border-cyan-950 focus:outline-none pl-2 pt-2 resize-none"}
-                      id={"textField"}
-                      value={textValue}
-                      onChange={(e) => onTextChange(e.target.value)}/>
             <input type={"file"} className={"w-10 bg-gray-500 h-10"} onChange={(e) => {
                 const selectedFile = e.target.files[0];
                 if (selectedFile){
                     sendPhoto(selectedFile);
                 }
             }}/>
+            <textarea onKeyDown={keyDown} className={"w-[70%] text-gray-300 min-h-20 bg-gray-600 rounded-2xl border-2 p-2 border-cyan-950 focus:outline-none resize-none"}
+                      id={"textField"}
+                      value={textValue}
+                      onChange={(e) => onTextChange(e.target.value)}
+            />
+            <button className={"w-12 h-12 border-gray-700 rounded-xl hover:bg-gray-500 duration-500 border-2 bg-gray-600"} onClick={() => {setShowGifs(!showGifs)}}>Gifs</button>
+            <GifDisplay gifs={gifs} socket={socket} roomId={roomId} login={login} show={showGifs}/>
+
+
         </div>
 
     )

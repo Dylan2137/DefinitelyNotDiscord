@@ -66,7 +66,7 @@ export default function FriendList({userId, setRoomId, login, socket, pfp, setPf
     }, [getFriends, socket]);
     return(
         <>
-            <div className="flex flex-col h-screen w-[15vw] bg-gray-900">
+            <div className="flex flex-col h-screen w-[15vw] bg-gray-900 m-0">
                 <span className={"p-2 text-2xl text-blue-950 bg-gray-500 border-b border-gray-400 flex flex-col"}><Link to={"/"} className={"font-bold"} onClick={() => {setRoomId(0)}}><img src={`http://localhost:3000${pfp}`} alt={login} className={"w-10 h-10"}/>{login}</Link>
                     <input
                         type={"file"}

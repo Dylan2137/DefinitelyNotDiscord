@@ -146,8 +146,8 @@ export default function MyApp(){
                         <div id={"content"} ref={contentRef} className={"flex-1 flex flex-col overflow-y-auto p-4 pb-13 pt-20 justify-end-safe ml-12 mb-20"}>
                             <Messages messages={messages} setMessages={setMessages} userId={userId} gifs={gifs} setGifs={setGifs}/>
                         </div>
-                        <div id={"input"} className={"fixed bottom-0 w-full flex justify-start pl-12"}>
-                            <TypeField textValue={text} onTextChange={setText} keyDown={handleSendMessage} userId={userId} roomId={roomId} socket={socket} login={login}/>
+                        <div id={"input"} className={"fixed bottom-0 w-full flex justify-start"}>
+                            <TypeField textValue={text} onTextChange={setText} keyDown={handleSendMessage} userId={userId} roomId={roomId} socket={socket} login={login} gifs={gifs}/>
                         </div>
                     </div>
                 </div>

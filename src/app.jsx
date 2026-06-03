@@ -41,7 +41,7 @@ export default function MyApp(){
                     });
                     const data = await response.json();
                     if (response.ok){
-                        setMessages(data);
+                        setMessages(data.messages);
                         console.log("Got messages");
                     }
                     else{
@@ -106,7 +106,7 @@ export default function MyApp(){
                 const messageData = {
                     roomId: roomId,
                     message: text.trim(),
-                    senderLogin: login,
+                    senderId: login,
                     isPhoto: false
                 }
 

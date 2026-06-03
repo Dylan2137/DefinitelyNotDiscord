@@ -1,12 +1,5 @@
-import {useState} from "react";
-
-
-
-
 export default function Messages({messages, userId, setGifs, gifs}){
-    const [gifPath, setGifPath] = useState("");
-    const [error, setError] = useState("");
-    const addGif = async () => {
+    const addGif = async (gifPath) => {
         try{
             const response = await fetch ("http://localhost:3000/gifs/add-gif", {
                 method: "POST",
@@ -17,11 +10,10 @@ export default function Messages({messages, userId, setGifs, gifs}){
             });
             const data = await response.json();
             if (response.ok){
-                setError(data.message);
                 setGifs([...gifs, gifPath]);
             }
             else{
-                setError(data.message);
+                console.log(data.message)
             }
 
         }catch (err){
@@ -36,16 +28,8 @@ export default function Messages({messages, userId, setGifs, gifs}){
                 {msg.isPhoto ? msg.text.endsWith(".gif") ?
                 <><img src={`http://localhost:3000${msg.text}`} className={"max-w-150 max-h-100"} alt={"Gif"}/>
                 <button className={"bg-gray-900 hover:bg-gray-600 w-15 h-8 rounded-xl"} onClick={() => {
-                    setGifPath(msg.text);
-                    console.log(gifPath);
-                    console.log("Trynna save gif")
-                    if (gifPath !== ""){
-                        addGif();
-                    }
-                    else{
-                        setError("Click again to confirm");
-                    }
-                }}>fav</button>{error}</>
+                    addGif(msg.text);
+                }}>fav</button></>
                 :<img src={`http://localhost:3000${msg.text}`} className={"max-w-150 max-h-100"} alt={"Image"}/> : msg.text}</div>
         ))}
         </>

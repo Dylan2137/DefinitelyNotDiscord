@@ -46,7 +46,7 @@ router.post('/get-friends', async(req, res) => {
     let {userId, login} = req.body;
     try{
 
-        const [friends] = await db.execute("SELECT room_id, login FROM rooms JOIN users ON (users.user_id = rooms.user1_id) OR (users.user_id = rooms.user2_id) WHERE (rooms.user1_id = ? OR rooms.user2_id = ?) AND login != ?", [userId, userId, login]);
+        const [friends] = await db.execute("SELECT room_id, login, profile_picture FROM rooms JOIN users ON (users.user_id = rooms.user1_id) OR (users.user_id = rooms.user2_id) WHERE (rooms.user1_id = ? OR rooms.user2_id = ?) AND login != ?", [userId, userId, login]);
         res.status(200).json(friends);
     }
     catch(err){

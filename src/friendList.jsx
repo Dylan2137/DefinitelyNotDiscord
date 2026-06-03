@@ -3,8 +3,6 @@ import {Link} from "react-router-dom";
 
 export default function FriendList({userId, setRoomId, login, socket, pfp, setPfp}) {
     const [friends, setFriends] = useState([]);
-    const [file, setFile] = useState(null);
-
     const getFriends = useCallback(async () => {
         try {
             const response = await fetch('http://localhost:3000/friends/get-friends', {
@@ -26,9 +24,7 @@ export default function FriendList({userId, setRoomId, login, socket, pfp, setPf
             return null;
         }
     }, [userId, login]);
-    const uploadImage = async () => {
-        if (!file) return alert("Select a file");
-
+    const uploadImage = async (file) => {
         const formData = new FormData();
         formData.append('photo', file);
         formData.append('userId', userId);
@@ -67,24 +63,18 @@ export default function FriendList({userId, setRoomId, login, socket, pfp, setPf
     return(
         <>
             <div className="flex flex-col h-screen w-[15vw] bg-gray-900 m-0">
-                <span className={"p-2 text-2xl text-blue-950 bg-gray-500 border-b border-gray-400 flex flex-col"}><Link to={"/"} className={"font-bold"} onClick={() => {setRoomId(0)}}><img src={`http://localhost:3000${pfp}`} alt={login} className={"w-10 h-10"}/>{login}</Link>
+                <span className={"p-2 text-2xl text-blue-950 bg-gray-500 border-b border-gray-400 flex flex-col"}><Link to={"/"} className={"font-bold"} onClick={() => {setRoomId(0)}}><img src={`http://localhost:3000${pfp}`} alt={login} className={"w-10 h-10 border border-gray-100 rounded-[100%]"}/>{login}</Link>
                     <input
                         type={"file"}
                         id={"pfp"}
                         name={"pfp"}
                         className={"w-20 text-sm bg-gray-700 "}
-                        onChange={(e) => {setFile(e.target.files[0])}}
+                        onChange={(e) => {uploadImage(e.target.files[0])}}
                     />
-                    <button
-                        className={"m-2 bg-gray-900 rounded-xl text-gray-50"}
-                        onClick={uploadImage}
-                    >
-                        Upload
-                    </button>
                 </span>
                 {friends.map((friend, index) => (
                     <div className={"border-b border-gray-400"}>
-                        <div key={index} className="cursor-pointer p-3 bg-gray-800 mt-1 mb-1 hover:bg-gray-700 duration-200 rounded-2xl" onClick={() => {setRoomId(friend.room_id)}}>{friend.login}</div>
+                        <div key={index} className="cursor-pointer flex flex-row h-12 p-2 bg-gray-800 mt-1 mb-1 hover:bg-gray-700 duration-200 rounded-2xl" onClick={() => {setRoomId(friend.room_id)}}><img src={friend.profile_picture} className={"w-7 h-7 border border-gray-100 rounded-[100%]"} alt={""}/>{friend.login}</div>
                     </div>
 
                 ))}

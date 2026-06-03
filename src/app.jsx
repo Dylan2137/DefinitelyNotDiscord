@@ -128,7 +128,7 @@ export default function MyApp(){
                             <FriendList userId={userId} setRoomId={setRoomId} login={login} socket={socket} pfp={pfp} setPfp={setPfp}/>
                             <div className={"w-full h-screen flex flex-col"}>
                                 <div id={"header"} className={"bg-gray-950 w-full h-[7vh]"}>
-                                    <Link className={"font-bold text-xl self-center align-middle justify-center h-full w-[25%] flex pt-5 hover:bg-gray-700 duration-100"} to={"/friend-requests"}>Friend requests</Link>
+                                    <Link className={"font-bold text-xl self-center align-middle justify-center h-full w-[25%]  flex hover:bg-gray-700 duration-100"} to={"/friend-requests"}>Friend requests</Link>
                                 </div>
                             </div>
                         </div>

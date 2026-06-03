@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import {Link} from "react-router-dom";
 
-export default function FriendList({userId, setRoomId, login, socket, pfp, setPfp}) {
+export default function FriendList({userId, setRoomId, login, socket, pfp, setPfp, setChatter}) {
     const [friends, setFriends] = useState([]);
     const getFriends = useCallback(async () => {
         try {
@@ -74,7 +74,7 @@ export default function FriendList({userId, setRoomId, login, socket, pfp, setPf
                 </span>
                 {friends.map((friend, index) => (
                     <div className={"border-b border-gray-400"}>
-                        <div key={index} className="cursor-pointer flex flex-row h-12 p-2 bg-gray-800 mt-1 mb-1 hover:bg-gray-700 duration-200 rounded-2xl" onClick={() => {setRoomId(friend.room_id)}}><img src={friend.profile_picture} className={"w-7 h-7 border border-gray-100 rounded-[100%]"} alt={""}/>{friend.login}</div>
+                        <div key={index} className="cursor-pointer flex flex-row h-12 p-2 bg-gray-800 mt-1 mb-1 hover:bg-gray-700 duration-200 rounded-2xl" onClick={() => {setRoomId(friend.room_id); setChatter(friend);}}><img src={friend.profile_picture} className={"w-7 h-7 border border-gray-100 rounded-[100%]"} alt={""}/>{friend.login}</div>
                     </div>
 
                 ))}

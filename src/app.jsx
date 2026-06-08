@@ -106,8 +106,9 @@ export default function MyApp(){
                 const messageData = {
                     roomId: roomId,
                     message: text.trim(),
-                    senderId: login,
-                    isPhoto: false
+                    senderLogin: login,
+                    isPhoto: false,
+                    pfp: pfp
                 }
 
                 socket.emit('sendMessage', messageData);

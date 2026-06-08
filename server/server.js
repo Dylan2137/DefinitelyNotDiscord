@@ -46,7 +46,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('sendMessage', async (data) => {
-        const {roomId, message, senderLogin, isPhoto} = data;
+        const {roomId, message, senderLogin, isPhoto, pfp} = data;
         const userId = await db.execute("SELECT user_id FROM users WHERE login = ?", [senderLogin]);
         if (!isPhoto){
             await db.execute("INSERT INTO messages (room_id, user_id, message_content, isPhoto) VALUES (?, ?, ?, ?)", [roomId, userId[0][0].user_id, message, isPhoto]);
@@ -54,7 +54,8 @@ io.on('connection', (socket) => {
         io.to(roomId).emit('receiveMessage', {
             text: message,
             sender: senderLogin,
-            isPhoto: isPhoto
+            isPhoto: isPhoto,
+            pfp: pfp
         });
     });
 

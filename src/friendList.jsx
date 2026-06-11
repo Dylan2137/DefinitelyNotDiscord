@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import {Link} from "react-router-dom";
 
-export default function FriendList({userId, setRoomId, login, socket, pfp, setPfp, setChatter}) {
+export default function FriendList({userId, setRoomId, login, socket, pfp, setPfp, setChatter, setIsLoggedIn}) {
     const [friends, setFriends] = useState([]);
     const getFriends = useCallback(async () => {
         try {
@@ -71,6 +71,7 @@ export default function FriendList({userId, setRoomId, login, socket, pfp, setPf
                         className={"w-20 text-sm bg-gray-700 "}
                         onChange={(e) => {uploadImage(e.target.files[0])}}
                     />
+                    <button className={"font-bold bg-gray-950 rounded-xl text-red-400 mt-2 cursor-pointer hover:bg-gray-600"} onClick={() => {setIsLoggedIn(false); setRoomId(0)}}>Log Out</button>
                 </span>
                 {friends.map((friend, index) => (
                     <div className={"border-b border-gray-400"}>

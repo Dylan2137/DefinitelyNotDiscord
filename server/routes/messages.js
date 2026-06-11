@@ -8,7 +8,7 @@ import upload from '../upload.js';
 router.post('/get-messages', async(req, res) => {
     let {roomId} = req.body;
     try{
-        const [messages] = await db.execute("SELECT message_content as text, login as sender, isPhoto FROM messages JOIN users ON messages.user_id = users.user_id WHERE room_id = ?", [roomId]);
+        const [messages] = await db.execute("SELECT message_content as text, login as sender, profile_picture as pfp, isPhoto FROM messages JOIN users ON messages.user_id = users.user_id WHERE room_id = ?", [roomId]);
         res.status(200).json({messages: messages});
     }
     catch(err){

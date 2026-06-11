@@ -24,7 +24,7 @@ export default function Messages({messages, userId, setGifs, gifs}){
         <>
         {messages.map((msg, index) => (
             <div key={index} className={"text-gray-300 w-fit rounded-3xl p-1 max-w-[95%] wrap-break-word"}>{index !== 0 && msg.sender === messages[index-1].sender ? <></>:
-                <><b className={"text-lg text-blue-600 flex m-0 p-0"}><img src={msg.pfp} alt={"Fuckyounigga"} className={"w-7 h-7 border border-gray-100 rounded-[100%] mr-2"}/>{msg.sender}</b><br /></>}
+                <><b className={"text-lg text-blue-600 flex m-0 p-0"}><img src={msg.pfp} alt={"PFP"} className={"w-7 h-7 border border-gray-100 rounded-[100%] mr-2"}/>{msg.sender}</b><br /></>}
                 {msg.isPhoto ? msg.text.endsWith(".gif") ?
                 <><img src={`http://localhost:3000${msg.text}`} className={"max-w-150 max-h-100"} alt={"Gif"}/>
                 <button className={"bg-gray-900 hover:bg-gray-600 w-15 h-8 rounded-xl"} onClick={() => {

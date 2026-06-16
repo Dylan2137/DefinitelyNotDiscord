@@ -5,6 +5,7 @@ import RegisterForm from "./register";
 import Messages from "./messages";
 import FriendRequest from "./friendRequest.jsx";
 import FriendList from "./friendList";
+import FriendMenu from "./friendMenu";
 import { Link } from "react-router-dom";
 import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import { io } from "socket.io-client";
@@ -20,6 +21,8 @@ export default function MyApp(){
     const [pfp, setPfp] = useState("");
     const [gifs, setGifs] = useState([]);
     const [chatter, setChatter] = useState({});
+    const [friends, setFriends] = useState([]);
+    const [showFriendMenu, setShowFriendMenu] = useState(false);
     const navigate = useNavigate();
 
 
@@ -126,7 +129,7 @@ export default function MyApp(){
             <Route path="/" element={
                 isLoggedIn ? (
                         <div className={"flex "}>
-                            <FriendList userId={userId} setRoomId={setRoomId} login={login} socket={socket} pfp={pfp} setPfp={setPfp} setChatter={setChatter} setIsLoggedIn={setIsLoggedIn}/>
+                            <FriendList userId={userId} setRoomId={setRoomId} login={login} socket={socket} pfp={pfp} setPfp={setPfp} setChatter={setChatter} setIsLoggedIn={setIsLoggedIn} setAppFriends={setFriends}/>
                             <div className={"w-full h-screen flex flex-col"}>
                                 <div id={"header"} className={"bg-gray-950 w-full h-[7vh]"}>
                                     <Link className={"font-bold text-xl self-center align-middle justify-center h-full w-[25%]  flex hover:bg-gray-700 duration-100"} to={"/friend-requests"}>Friend requests</Link>
@@ -142,9 +145,16 @@ export default function MyApp(){
             <Route path="/chat" element={
                 isLoggedIn ? (
                 <div className={"flex flex-row w-full"}>
-                    <FriendList userId={userId} setRoomId={setRoomId} login={login} socket={socket} pfp={pfp} setPfp={setPfp} setChatter={setChatter} setIsLoggedIn={setIsLoggedIn}/>
+                    <FriendList userId={userId} setRoomId={setRoomId} login={login} socket={socket} pfp={pfp} setPfp={setPfp} setChatter={setChatter} setIsLoggedIn={setIsLoggedIn} setAppFriends={setFriends}/>
                     <div className={"h-screen flex flex-col w-[85vw]"}>
-                        <div id={"header"} className={"bg-gray-950 w-full h-[7vh] flex"}><img src={chatter.profile_picture} alt={""} className={"w-12 h-12 border border-gray-100 rounded-[100%]"}/><h1 className={"text-2xl"}>{chatter.login}</h1></div>
+                        <div id={"header"} className={"bg-gray-950 w-full h-[7vh] flex"}><img src={chatter.profile_picture} alt={""} className={"w-12 h-12 border border-gray-100 rounded-[100%]"}/>
+                            <h1 className={"text-2xl"}>{chatter.login}</h1>
+                            <div className={"w-full flex flex-row-reverse"}>
+                                <button className={"bg-gray-700 p-2 m-2 rounded-xl hover:bg-gray-500 transition duration-300 self-end"} onClick={() => setShowFriendMenu(!showFriendMenu)}>Group</button>
+                            </div>
+                        </div>
+                        {showFriendMenu ? (<FriendMenu userId={userId} chatter={chatter} friends={friends}/>) : <></>}
+
                         <div id={"content"} ref={contentRef} className={"flex-1 flex flex-col overflow-y-auto p-4 pb-13 pt-20 justify-end-safe ml-12 mb-20"}>
                             <Messages messages={messages} setMessages={setMessages} userId={userId} gifs={gifs} setGifs={setGifs}/>
                         </div>
@@ -174,7 +184,7 @@ export default function MyApp(){
             <Route path="/friend-requests" element={
                 isLoggedIn ? (
                     <div className={"flex flex-row w-full"}>
-                        <FriendList userId={userId} setRoomId={setRoomId} login={login} socket={socket} pfp={pfp} setPfp={setPfp} setChatter={setChatter} setIsLoggedIn={setIsLoggedIn}/>
+                        <FriendList userId={userId} setRoomId={setRoomId} login={login} socket={socket} pfp={pfp} setPfp={setPfp} setChatter={setChatter} setIsLoggedIn={setIsLoggedIn} setAppFriends={setFriends}/>
                         <FriendRequest userId={userId} socket={socket}/>
                     </div>) : (
                         <Navigate to={"/login"} />

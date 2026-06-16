@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import {Link} from "react-router-dom";
 
-export default function FriendList({userId, setRoomId, login, socket, pfp, setPfp, setChatter, setIsLoggedIn}) {
+export default function FriendList({userId, setRoomId, login, socket, pfp, setPfp, setChatter, setIsLoggedIn, setAppFriends}) {
     const [friends, setFriends] = useState([]);
     const getFriends = useCallback(async () => {
         try {
@@ -47,9 +47,12 @@ export default function FriendList({userId, setRoomId, login, socket, pfp, setPf
     }
     useEffect(() => {
         getFriends().then(data => {
-            if (data) setFriends(data);
+            if (data){
+                setFriends(data);
+                setAppFriends(data);
+            }
         });
-    }, [getFriends]);
+    }, [getFriends, setAppFriends]);
 
     useEffect(() => {
         socket.on('reloadFriends', () => {

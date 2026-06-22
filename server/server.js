@@ -38,6 +38,11 @@ io.on('connection', (socket) => {
         io.to(`user_${senderId}`).emit('reloadFriends');
         console.log("reloading friends")
     });
+    socket.on('reloadGroups', ({users}) => {
+        for (let x in users){
+            io.to(`user_${x.user_id}`).emit('reloadFriends');
+        }
+    })
 
     socket.on('reloadRequests', async (targetLogin) => {
         const targetId = await db.execute("SELECT user_id FROM users WHERE login = ?", [targetLogin]);

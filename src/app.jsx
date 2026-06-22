@@ -15,14 +15,15 @@ export default function MyApp(){
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [text, setText] = useState("");
     const [messages, setMessages] = useState([]);
-    const [login, setLogin] = useState("");
-    const [userId, setUserId] = useState(0);
+    const [user, setUser] = useState(0);
     const [roomId, setRoomId] = useState(0);
     const [pfp, setPfp] = useState("");
     const [gifs, setGifs] = useState([]);
     const [chatter, setChatter] = useState({});
     const [friends, setFriends] = useState([]);
     const [showFriendMenu, setShowFriendMenu] = useState(false);
+    const [isGroup, setIsGroup] = useState(false);
+    const [groupName, setGroupName] = useState("");
     const navigate = useNavigate();
 
 
@@ -74,7 +75,7 @@ export default function MyApp(){
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({userId})
+                    body: JSON.stringify({userId: user.user_id})
                 })
                 if (response.ok){
                     const data = await response.json();
@@ -89,13 +90,13 @@ export default function MyApp(){
                 console.log(err);
             }
         }
-        if (userId !== 0){
-            socket.emit('identify', userId);
+        if (user.user_id !== 0){
+            socket.emit('identify', user.user_id);
             getGifs();
 
         }
 
-    }, [userId]);
+    }, [user]);
 
 
     const handleSendMessage = (event) => {
@@ -109,7 +110,7 @@ export default function MyApp(){
                 const messageData = {
                     roomId: roomId,
                     message: text.trim(),
-                    senderLogin: login,
+                    senderLogin: user.login,
                     isPhoto: false,
                     pfp: pfp
                 }
@@ -129,7 +130,7 @@ export default function MyApp(){
             <Route path="/" element={
                 isLoggedIn ? (
                         <div className={"flex "}>
-                            <FriendList userId={userId} setRoomId={setRoomId} login={login} socket={socket} pfp={pfp} setPfp={setPfp} setChatter={setChatter} setIsLoggedIn={setIsLoggedIn} setAppFriends={setFriends}/>
+                            <FriendList userId={user.user_id} setRoomId={setRoomId} login={user.login} socket={socket} pfp={pfp} setPfp={setPfp} setChatter={setChatter} setIsLoggedIn={setIsLoggedIn} setAppFriends={setFriends} setAppGroup={setIsGroup} setGroupName={setGroupName}/>
                             <div className={"w-full h-screen flex flex-col"}>
                                 <div id={"header"} className={"bg-gray-950 w-full h-[7vh]"}>
                                     <Link className={"font-bold text-xl self-center align-middle justify-center h-full w-[25%]  flex hover:bg-gray-700 duration-100"} to={"/friend-requests"}>Friend requests</Link>
@@ -145,21 +146,27 @@ export default function MyApp(){
             <Route path="/chat" element={
                 isLoggedIn ? (
                 <div className={"flex flex-row w-full"}>
-                    <FriendList userId={userId} setRoomId={setRoomId} login={login} socket={socket} pfp={pfp} setPfp={setPfp} setChatter={setChatter} setIsLoggedIn={setIsLoggedIn} setAppFriends={setFriends}/>
+                    <FriendList userId={user.user_id} setRoomId={setRoomId} login={user.login} socket={socket} pfp={pfp} setPfp={setPfp} setChatter={setChatter} setIsLoggedIn={setIsLoggedIn} setAppFriends={setFriends} setAppGroup={setIsGroup} setGroupName={setGroupName}/>
                     <div className={"h-screen flex flex-col w-[85vw]"}>
-                        <div id={"header"} className={"bg-gray-950 w-full h-[7vh] flex"}><img src={chatter.profile_picture} alt={""} className={"w-12 h-12 border border-gray-100 rounded-[100%]"}/>
+                        {!isGroup ? (
+                        <div id={"header"} className={"bg-gray-950 w-full h-[7vh] flex"}>
+                            <img src={chatter.profile_picture} alt={""} className={"w-12 h-12 border border-gray-100 rounded-[100%]"}/>
                             <h1 className={"text-2xl"}>{chatter.login}</h1>
                             <div className={"w-full flex flex-row-reverse"}>
                                 <button className={"bg-gray-700 p-2 m-2 rounded-xl hover:bg-gray-500 transition duration-300 self-end"} onClick={() => setShowFriendMenu(!showFriendMenu)}>Group</button>
                             </div>
-                        </div>
-                        {showFriendMenu ? (<FriendMenu userId={userId} chatter={chatter} friends={friends}/>) : <></>}
+                        </div>):
+                        <div id={"header"} className={"bg-gray-950 w-full h-[7vh] flex"}>
+                            <h1 className={"text-2xl"}>{groupName}</h1>
+                        </div>}
+
+                        {showFriendMenu ? (<FriendMenu user={user} chatter={chatter} friends={friends}/>) : <></>}
 
                         <div id={"content"} ref={contentRef} className={"flex-1 flex flex-col overflow-y-auto p-4 pb-13 pt-20 justify-end-safe ml-12 mb-20"}>
-                            <Messages messages={messages} setMessages={setMessages} userId={userId} gifs={gifs} setGifs={setGifs}/>
+                            <Messages messages={messages} setMessages={setMessages} userId={user.user_id} gifs={gifs} setGifs={setGifs}/>
                         </div>
                         <div id={"input"} className={"fixed bottom-0 w-full flex justify-start"}>
-                            <TypeField textValue={text} onTextChange={setText} keyDown={handleSendMessage} userId={userId} roomId={roomId} socket={socket} login={login} gifs={gifs}/>
+                            <TypeField textValue={text} onTextChange={setText} keyDown={handleSendMessage} userId={user.user_id} roomId={roomId} socket={socket} login={user.login} gifs={gifs}/>
                         </div>
                     </div>
                 </div>) : (<Navigate to={"/login"} />)
@@ -171,9 +178,8 @@ export default function MyApp(){
                         setIsLoggedIn(true);
                         navigate("/");
                     }}
-                    login={login}
-                    setLogin={setLogin}
-                    setUserId={setUserId}
+                    login={user.login}
+                    setUser={setUser}
                     setPfp={setPfp}
                 />
             } />
@@ -184,8 +190,8 @@ export default function MyApp(){
             <Route path="/friend-requests" element={
                 isLoggedIn ? (
                     <div className={"flex flex-row w-full"}>
-                        <FriendList userId={userId} setRoomId={setRoomId} login={login} socket={socket} pfp={pfp} setPfp={setPfp} setChatter={setChatter} setIsLoggedIn={setIsLoggedIn} setAppFriends={setFriends}/>
-                        <FriendRequest userId={userId} socket={socket}/>
+                        <FriendList userId={user.user_id} setRoomId={setRoomId} login={user.login} socket={socket} pfp={pfp} setPfp={setPfp} setChatter={setChatter} setIsLoggedIn={setIsLoggedIn} setAppFriends={setFriends} setAppGroup={setIsGroup} setGroupName={setGroupName}/>
+                        <FriendRequest userId={user.user_id} socket={socket}/>
                     </div>) : (
                         <Navigate to={"/login"} />
                     )

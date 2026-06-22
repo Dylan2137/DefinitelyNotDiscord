@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-export default function LoginForm ({onLoginSuccess, login, setLogin, setUserId, setPfp}){
+export default function LoginForm ({onLoginSuccess, setUser, setPfp}){
+    const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const loginCheck = async (e) => {
@@ -19,8 +20,8 @@ export default function LoginForm ({onLoginSuccess, login, setLogin, setUserId, 
                 const data = await response.json();
                 if (response.ok){
                     setError(data.message);
-                    setUserId(data.userId);
-                    setPfp(data.pfp)
+                    setUser(data.user);
+                    setPfp(data.user.profile_picture)
                     onLoginSuccess();
                 }
                 else {

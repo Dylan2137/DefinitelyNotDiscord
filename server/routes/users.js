@@ -67,7 +67,7 @@ router.post('/login', async (req, res) => {
             bcrypt.compare(password, rows[0].password)
                 .then(result => {
                     if (result) {
-                        res.status(201).json({message: 'Login successful', userId: rows[0].user_id, pfp: rows[0].profile_picture})
+                        res.status(201).json({message: 'Login successful', user: rows[0],})
                     }else{
                         res.status(401).json({message: 'Password incorrect'})
                     }
